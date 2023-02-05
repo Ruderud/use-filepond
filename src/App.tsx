@@ -2,13 +2,31 @@ import { useState } from "react";
 import { FilePond, registerPlugin } from "react-filepond";
 import { FilePondFile } from "filepond";
 import { Box, Button, Typography } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import axios from "axios";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
+
+const postFile = async (files: File[]) => {
+  const formData = new FormData();
+
+  for (const imageFile of files) {
+    formData.append("image[]", imageFile, imageFile.name);
+  }
+
+  const response = await axios.post("/fileApi", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  console.log("response", response);
+};
 
 function App() {
   const [files, setFiles] = useState<File[]>([]);
@@ -48,6 +66,13 @@ function App() {
           ))}
         </ul>
       </Box>
+      <Button
+        onClick={() => {
+          postFile(files);
+        }}
+      >
+        파일 보내기
+      </Button>
     </div>
   );
 }
