@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FilePond, registerPlugin } from "react-filepond";
 import { FilePondFile } from "filepond";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
@@ -25,6 +25,8 @@ function App() {
     });
   };
 
+  const clearAllFiles = () => setFiles([]);
+
   return (
     <div className="App">
       <Box sx={{ width: 500 }}>
@@ -34,6 +36,7 @@ function App() {
           allowMultiple={true}
         />
       </Box>
+      <Button onClick={clearAllFiles}>파일 초기화</Button>
       <Box>
         <Typography>업로드된 파일들</Typography>
         <ul>
