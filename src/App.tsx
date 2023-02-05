@@ -1,32 +1,50 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
+import { FilePond, registerPlugin } from "react-filepond";
+import { FilePondFile } from "filepond";
+import { Box, Typography } from "@mui/material";
+
+import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
+import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+import "filepond/dist/filepond.min.css";
+import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+
+registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [files, setFiles] = useState<File[]>([]);
+
+  const onUpdateFiles = (filePondFiles: FilePondFile[]) => {
+    const files = filePondFiles.map(
+      (filePondFile) => filePondFile.file as File
+    );
+    setFiles(files);
+  };
+  const directDeleteFile = (deleteFileName: string) => () => {
+    setFiles((cur) => {
+      return cur.filter((curFile) => curFile.name !== deleteFileName);
+    });
+  };
 
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Box sx={{ width: 500 }}>
+        <FilePond
+          files={files}
+          onupdatefiles={onUpdateFiles}
+          allowMultiple={true}
+        />
+      </Box>
+      <Box>
+        <Typography>업로드된 파일들</Typography>
+        <ul>
+          {files.map((file) => (
+            <li>
+              {file.name}{" "}
+              <button onClick={directDeleteFile(file.name)}>삭제</button>
+            </li>
+          ))}
+        </ul>
+      </Box>
     </div>
   );
 }
